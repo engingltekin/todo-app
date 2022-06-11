@@ -59,7 +59,7 @@
         name: docker
         state: started
         enabled: yes
- - name: install aws cli
+    - name: install aws cli
       get_url:
         url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
         dest: /home/ec2-user/awscliv2.zip
