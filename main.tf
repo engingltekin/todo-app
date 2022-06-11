@@ -18,7 +18,7 @@ resource "aws_instance" "postgres_node" {
   ami = "ami-0f095f89ae15be883"
   instance_type = var.instancetype
   key_name = var.mykey
-  iam_instance_profile = aws_iam_instance_profile.ec2full.name
+  iam_instance_profile = ""jenkins-project-profile""
   vpc_security_group_ids = [aws_security_group.postgres-sec-gr.id]
   tags = {
     Name = "ansible_postgres"
@@ -31,7 +31,7 @@ resource "aws_instance" "react_node" {
   ami = "ami-0f095f89ae15be883"
   instance_type = var.instancetype
   key_name = var.mykey
-  iam_instance_profile = aws_iam_instance_profile.ec2full.name
+  iam_instance_profile = "jenkins-project-profile"
   vpc_security_group_ids = [aws_security_group.react-sec-gr.id]
   tags = {
     Name = "ansible_react"
@@ -44,7 +44,7 @@ resource "aws_instance" "nodejs_node" {
   ami = "ami-0f095f89ae15be883"
   instance_type = var.instancetype
   key_name = var.mykey
-  iam_instance_profile = aws_iam_instance_profile.ec2full.name
+  iam_instance_profile = "jenkins-project-profile"
   vpc_security_group_ids = [aws_security_group.nodejs-sec-gr.id]
   tags = {
     Name = "ansible_nodejs"

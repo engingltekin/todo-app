@@ -3,6 +3,8 @@
   any_errors_fatal: true
   hosts: _development
   become: true
+      aws_region: us-east-1
+    ecr_registry: 134337769473.dkr.ecr.us-east-1.amazonaws.com
   tasks:
     - name: upgrade all packages
       yum: 
@@ -28,6 +30,9 @@
         state: latest
       with_items:
         - yum-utils
+        - device-mapper-persistent-data
+        - lvm2
+        - unzip        
     - name: Add Docker repo
       get_url:
         url: https://download.docker.com/linux/centos/docker-ce.repo
@@ -54,6 +59,25 @@
         name: docker
         state: started
         enabled: yes
+ - name: install aws cli
+      get_url:
+        url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+        dest: /home/ec2-user/awscliv2.zip
+
+    - name: unzip zip file
+      unarchive:
+        src: /home/ec2-user/awscliv2.zip
+        dest: /home/ec2-user
+        remote_src: True
+
+    - name: run the awscli
+      shell: ./aws/install
+
+    - name: log in to AWS ec2-user
+      shell: |
+        export PATH=/usr/local/bin:$PATH
+        source ~/.bash_profile
+        aws ecr get-login-password --region {{ aws_region }} | docker login --username AWS --password-stdin {{ ecr_registry }}        
 
 - name: Postgre Database configuration
   hosts: _ansible_postgresql
@@ -65,9 +89,9 @@
     image_name: 134337769473.dkr.ecr.us-east-1.amazonaws.com/engin_gultekin/todo_app:postgres
   tasks:
 # container ve image check
-    - name: Docker authorization
-      shell: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "134337769473.dkr.ecr.us-east-1.amazonaws.com/engin_gultekin/todo_app:postgres"
-    
+    - name: remove {{ container_name }} container and {{ image_name }} if exists
+      shell: "docker ps -q --filter 'name={{ container_name }}' && docker stop {{ container_name }} && docker rm -fv {{ container_name }} && docker image rm -f {{ image_name }} || echo 'Not Found'"
+ 
     - name: Pull docker image 
       shell: docker pull 134337769473.dkr.ecr.us-east-1.amazonaws.com/engin_gultekin/todo_app:postgres
 
@@ -94,10 +118,6 @@
   tasks:
     - name: remove {{ container_name }} container and {{ image_name }} if exists
       shell: "docker ps -q --filter 'name={{ container_name }}' && docker stop {{ container_name }} && docker rm -fv {{ container_name }} && docker image rm -f {{ image_name }} || echo 'Not Found'"
-
-    - name: Docker authorization
-      shell: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "134337769473.dkr.ecr.us-east-1.amazonaws.com/engin_gultekin/todo_app:nodejs"
-    
     - name: Pull docker image 
       shell: docker pull 134337769473.dkr.ecr.us-east-1.amazonaws.com/engin_gultekin/todo_app:nodejs
 
@@ -119,10 +139,7 @@
   tasks:
     - name: remove {{ container_name }} container and {{ image_name }} if exists
       shell: "docker ps -q --filter 'name={{ container_name }}' && docker stop {{ container_name }} && docker rm -fv {{ container_name }} && docker image rm -f {{ image_name }} || echo 'Not Found'"
-
-    - name: Docker authorization
-      shell: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "134337769473.dkr.ecr.us-east-1.amazonaws.com/engin_gultekin/todo_app:react"
-    
+   
     - name: Pull docker image 
       shell: docker pull 134337769473.dkr.ecr.us-east-1.amazonaws.com/engin_gultekin/todo_app:react
 
