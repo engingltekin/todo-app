@@ -81,7 +81,7 @@
         aws ecr get-login-password --region {{ aws_region }} | docker login --username AWS --password-stdin {{ ecr_registry }}        
 
 - name: Postgre Database configuration
-  hosts: _ansible_postgresql
+  hosts: _ansible_postgres
   become: true
   gather_facts: No
   any_errors_fatal: true
