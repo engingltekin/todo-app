@@ -3,7 +3,8 @@
   any_errors_fatal: true
   hosts: _development
   become: true
-      aws_region: us-east-1
+  vars:
+    aws_region: us-east-1
     ecr_registry: 134337769473.dkr.ecr.us-east-1.amazonaws.com
   tasks:
     - name: upgrade all packages
