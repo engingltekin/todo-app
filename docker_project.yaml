@@ -88,7 +88,7 @@
     container_name: todoapp_postgres
     image_name: 134337769473.dkr.ecr.us-east-1.amazonaws.com/engin_gultekin/todo_app:postgres
   tasks:
-# container ve image check
+
     - name: remove {{ container_name }} container and {{ image_name }} if exists
       shell: "docker ps -q --filter 'name={{ container_name }}' && docker stop {{ container_name }} && docker rm -fv {{ container_name }} && docker image rm -f {{ image_name }} || echo 'Not Found'"
  
